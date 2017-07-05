@@ -1,4 +1,4 @@
-package com.majoinen.d.util;
+package com.majoinen.d.pwcrypt.tracker.util;
 
 import spark.Filter;
 import spark.Request;
