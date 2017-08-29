@@ -18,6 +18,10 @@ import static org.junit.Assert.assertTrue;
  */
 public class SQLDeviceDaoTest {
 
+    private static final String SELECT_VERIFY_CODE =
+      "SELECT verify_code FROM device_verify_code WHERE " +
+        "account_uuid = :account_uuid AND device_uuid = :device_uuid";
+
     private static final String EXISTING_ACC_UUID =
       "92a37290-728a-49f2-9589-57378acb3adc";
 
@@ -31,6 +35,8 @@ public class SQLDeviceDaoTest {
     private static final String EXISTING_DEV_PLATFORM = "Desktop";
 
     private static final String EXISTING_DEV_PUBLIC_KEY = "pubkey1";
+
+    private static final String EXISTING_DEV_VERIFY_CODE = "CODE";
 
     private static final String NEW_DEV_UUID =
       "f0658a55-660d-4f53-979c-411e75271ed0";
@@ -64,11 +70,18 @@ public class SQLDeviceDaoTest {
           .setParameter(":platform", EXISTING_DEV_PLATFORM)
           .setParameter(":public_key", EXISTING_DEV_PUBLIC_KEY)
           .executeUpdate();
+
+        databaseController
+          .prepareQuery(SQLDeviceDao.INSERT_DEVICE_VERIFY_CODE_QUERY)
+          .setParameter(":device_uuid", EXISTING_DEV_UUID)
+          .setParameter(":account_uuid", EXISTING_ACC_UUID)
+          .setParameter(":verify_code", EXISTING_DEV_VERIFY_CODE)
+          .executeUpdate();
     }
 
     @After
     public void afterEachTest() throws Exception {
-        TestDatabaseManager.deleteTestDatabase();
+        // TestDatabaseManager.deleteTestDatabase();
     }
 
     @Test
@@ -121,5 +134,16 @@ public class SQLDeviceDaoTest {
           deviceDao.listAllDevices(EXISTING_ACC_UUID, EXISTING_DEV_UUID);
         assertTrue(!deviceList.isEmpty());
         assertTrue(deviceList.size() == 1);
+    }
+
+    @Test
+    public void verifyDevice() throws Exception {
+        assertTrue(deviceDao.verifyDevice(EXISTING_DEV_VERIFY_CODE));
+    }
+
+    @Test(expected = PwCryptException.class)
+    public void verifyDeviceThrowsException() throws Exception {
+        TestDatabaseManager.deleteTestDatabase();
+        assertTrue(deviceDao.verifyDevice(EXISTING_DEV_VERIFY_CODE));
     }
 }
