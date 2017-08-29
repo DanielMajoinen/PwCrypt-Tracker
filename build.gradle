@@ -4,7 +4,7 @@ apply plugin: "java"            // Apply the java plugin to add support for Java
 apply plugin: "org.sonarqube"   // Apply SonarQube plugin
 
 // Variables
-mainClassName           = "com.majoinen.d.app.PwCrypt"
+mainClassName           = "com.majoinen.d.pwcrypt.tracker.PwCryptTracker"
 def sonarqubeURL        = "http://d.majoinen.com/sonarqube"
 
 
