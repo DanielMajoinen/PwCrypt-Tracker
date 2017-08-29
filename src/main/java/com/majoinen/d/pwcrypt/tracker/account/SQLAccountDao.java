@@ -26,20 +26,9 @@ public class SQLAccountDao implements AccountDao {
       "INSERT INTO account (account_uuid, email) " +
         "VALUES (:account_uuid, :email)";
 
-    // Query to insert account verification code
-    public static final String INSERT_ACCOUNT_VERIFY_CODE =
-      "INSERT INTO account_verify_code (account_uuid, verify_code) " +
-        "VALUES (:account_uuid, :verify_code)";
+    private static final int NEW_ACCOUNT_EXPECTED_AFFECTED_ROWS = 3;
 
-    private static final int VERIFICATION_CODES_SIZE = 2;
-
-    public static final int ACCOUNT_CODE_INDEX = 0;
-
-    public static final int DEVICE_CODE_INDEX = 1;
-
-    private static final int NEW_ACCOUNT_EXPECTED_AFFECTED_ROWS = 4;
-
-    static final int VERIFY_CODE_LENGTH = 20;
+    static final int VERIFY_CODE_LENGTH = 5;
 
     private static Map<DatabaseController, SQLAccountDao> map;
     private DatabaseController databaseController;
@@ -92,55 +81,38 @@ public class SQLAccountDao implements AccountDao {
      *
      * @param email Email of the new user
      * @param device Device information
-     * @return The verification codes generated for the new user, separated
-     * by a colon (account_code:device_code).
+     * @return A String containing the account verification code.
      */
     @Override
-    public String[] createAccount(String email, Device device) {
+    public String createAccount(String email, Device device) {
         /* Generate an account UUID */
         String accountUUID = UUID.randomUUID().toString();
-        /* Generate verification codes */
-        String[] verifyCodes = new String[VERIFICATION_CODES_SIZE];
-        verifyCodes[ACCOUNT_CODE_INDEX] =
-          Tools.generateRandomString(VERIFY_CODE_LENGTH, Tools.ALPHA_NUMERIC);
-        verifyCodes[DEVICE_CODE_INDEX] =
-          Tools.generateRandomString(VERIFY_CODE_LENGTH, Tools.ALPHA_NUMERIC);
+        /* Generate verification code */
+        String verifyCode = Tools.generateRandomString(VERIFY_CODE_LENGTH,
+          Tools.ALPHA_NUMERIC);
         /* Add account to database */
         try {
             if(NEW_ACCOUNT_EXPECTED_AFFECTED_ROWS == databaseController
               .prepareBatchQuery(CREATE_ACCOUNT_QUERY)
               .setParameter(":account_uuid", accountUUID)
               .setParameter(":email", email)
-              .prepareBatchQuery(INSERT_ACCOUNT_VERIFY_CODE)
-              .setParameter(":account_uuid", accountUUID)
-              .setParameter(":verify_code", verifyCodes[ACCOUNT_CODE_INDEX])
               .prepareBatchQuery(SQLDeviceDao.CREATE_DEVICE_QUERY)
               .setParameter(":device_uuid", device.getUuid())
               .setParameter(":account_uuid", accountUUID)
               .setParameter(":ip_address", device.getIp())
               .setParameter(":platform", device.getPlatform())
               .setParameter(":public_key", device.getPublicKey())
-              .prepareBatchQuery(SQLDeviceDao.INSERT_DEVICE_VERIFY_CODE)
+              .prepareBatchQuery(SQLDeviceDao.INSERT_DEVICE_VERIFY_CODE_QUERY)
               .setParameter(":device_uuid", device.getUuid())
-              .setParameter(":verify_code", verifyCodes[DEVICE_CODE_INDEX])
+              .setParameter(":account_uuid", accountUUID)
+              .setParameter(":verify_code", verifyCode)
               .executeUpdate()) {
-                return verifyCodes;
+                return verifyCode;
             } else {
                 throw new PwCryptException("Unexpected affected row count");
             }
         } catch(DBUtilsException e) {
             throw new PwCryptException("Error creating new account", e);
         }
-    }
-
-    /**
-     * Verify an account if the code matches that found in the database.
-     *
-     * @param code The verification code emailed to the user.
-     * @return True if the code matches, or false otherwise.
-     */
-    @Override
-    public boolean verifyEmail(String code) {
-        return false;
     }
 }
