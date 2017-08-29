@@ -26,4 +26,12 @@ public interface AccountDao {
      * device verification code to verify the newly created account.
      */
     String[] createAccount(String email, Device device);
+
+    /**
+     * Verify an account if the code matches that found in the database.
+     *
+     * @param code The verification code emailed to the user.
+     * @return True if the code matches, or false otherwise.
+     */
+    boolean verifyEmail(String code);
 }

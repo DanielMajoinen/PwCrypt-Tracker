@@ -143,4 +143,15 @@ public class SQLAccountDao implements AccountDao {
             throw new PwCryptException("Error creating new account", e);
         }
     }
+
+    /**
+     * Verify an account if the code matches that found in the database.
+     *
+     * @param code The verification code emailed to the user.
+     * @return True if the code matches, or false otherwise.
+     */
+    @Override
+    public boolean verifyEmail(String code) {
+        return false;
+    }
 }
