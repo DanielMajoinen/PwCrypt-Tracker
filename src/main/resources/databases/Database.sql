@@ -1,7 +1,6 @@
 CREATE TABLE "account" (
   `account_uuid` VARCHAR[36],
   `email` VARCHAR[256] NOT NULL UNIQUE,
-  `verified` INTEGER DEFAULT 0,
   PRIMARY KEY(`account_uuid`) );
 CREATE TABLE "device" (
   `device_uuid` VARCHAR[36] NOT NULL,
