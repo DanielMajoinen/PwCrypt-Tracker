@@ -81,7 +81,7 @@ public class SQLDeviceDaoTest {
 
     @After
     public void afterEachTest() throws Exception {
-        // TestDatabaseManager.deleteTestDatabase();
+        TestDatabaseManager.deleteTestDatabase();
     }
 
     @Test
@@ -102,6 +102,12 @@ public class SQLDeviceDaoTest {
         assertTrue(!deviceDao.deviceExists(EXISTING_ACC_UUID, NEW_DEV_UUID));
     }
 
+    @Test(expected = PwCryptException.class)
+    public void deviceExistsThrowsException() throws Exception {
+        TestDatabaseManager.deleteTestDatabase();
+        deviceDao.deviceExists(EXISTING_ACC_UUID, EXISTING_DEV_UUID);
+    }
+
     @Test
     public void addValidDevice() throws Exception {
         String code = deviceDao.addDevice(EXISTING_ACC_UUID, NEW_DEVICE);
@@ -112,6 +118,17 @@ public class SQLDeviceDaoTest {
     public void addDeviceThrowsException() throws Exception {
         TestDatabaseManager.deleteTestDatabase();
         deviceDao.addDevice(EXISTING_ACC_UUID, NEW_DEVICE);
+    }
+
+    @Test
+    public void verifyDevice() throws Exception {
+        assertTrue(deviceDao.verifyDevice(EXISTING_DEV_VERIFY_CODE));
+    }
+
+    @Test(expected = PwCryptException.class)
+    public void verifyDeviceThrowsException() throws Exception {
+        TestDatabaseManager.deleteTestDatabase();
+        assertTrue(deviceDao.verifyDevice(EXISTING_DEV_VERIFY_CODE));
     }
 
     @Test
@@ -134,16 +151,5 @@ public class SQLDeviceDaoTest {
           deviceDao.listAllDevices(EXISTING_ACC_UUID, EXISTING_DEV_UUID);
         assertTrue(!deviceList.isEmpty());
         assertTrue(deviceList.size() == 1);
-    }
-
-    @Test
-    public void verifyDevice() throws Exception {
-        assertTrue(deviceDao.verifyDevice(EXISTING_DEV_VERIFY_CODE));
-    }
-
-    @Test(expected = PwCryptException.class)
-    public void verifyDeviceThrowsException() throws Exception {
-        TestDatabaseManager.deleteTestDatabase();
-        assertTrue(deviceDao.verifyDevice(EXISTING_DEV_VERIFY_CODE));
     }
 }
