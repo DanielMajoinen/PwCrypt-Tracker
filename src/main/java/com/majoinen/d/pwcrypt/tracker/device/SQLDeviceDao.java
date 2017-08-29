@@ -2,6 +2,7 @@ package com.majoinen.d.pwcrypt.tracker.device;
 
 import com.majoinen.d.database.DatabaseController;
 import com.majoinen.d.database.exception.DBUtilsException;
+import com.majoinen.d.encryption.utils.Tools;
 import com.majoinen.d.pwcrypt.tracker.exception.PwCryptException;
 
 import java.util.HashMap;
@@ -31,6 +32,8 @@ public class SQLDeviceDao implements DeviceDao {
         "VALUES (:device_uuid, :verify_code)";
 
     static final int VERIFY_CODE_LENGTH = 20;
+
+    private static final int NEW_DEVICE_EXPECTED_AFFECTED_ROWS = 2;
 
     private static Map<DatabaseController, SQLDeviceDao> map;
     private DatabaseController databaseController;
@@ -88,7 +91,29 @@ public class SQLDeviceDao implements DeviceDao {
      */
     @Override
     public String addDevice(String accountUUID, Device device) {
-        return null;
+        /* Generate verification code */
+        String verifyCode = Tools.generateRandomString(VERIFY_CODE_LENGTH,
+          Tools.ALPHA_NUMERIC);
+        /* Add device to the database */
+        try {
+            if(NEW_DEVICE_EXPECTED_AFFECTED_ROWS == databaseController
+              .prepareBatchQuery(SQLDeviceDao.CREATE_DEVICE_QUERY)
+              .setParameter(":device_uuid", device.getUuid())
+              .setParameter(":account_uuid", accountUUID)
+              .setParameter(":ip_address", device.getIp())
+              .setParameter(":platform", device.getPlatform())
+              .setParameter(":public_key", device.getPublicKey())
+              .prepareBatchQuery(SQLDeviceDao.INSERT_DEVICE_VERIFY_CODE)
+              .setParameter(":device_uuid", device.getUuid())
+              .setParameter(":verify_code", verifyCode)
+              .executeUpdate()) {
+                return verifyCode;
+            } else {
+                throw new PwCryptException("Unexpected affected row count");
+            }
+        } catch(DBUtilsException e) {
+            throw new PwCryptException("Error adding new device", e);
+        }
     }
 
     /**
