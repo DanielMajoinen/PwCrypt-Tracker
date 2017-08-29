@@ -3,6 +3,7 @@ package com.majoinen.d.pwcrypt.tracker.device;
 import com.majoinen.d.database.DatabaseController;
 import com.majoinen.d.pwcrypt.tracker.TestDatabaseManager;
 import com.majoinen.d.pwcrypt.tracker.account.SQLAccountDao;
+import com.majoinen.d.pwcrypt.tracker.exception.PwCryptException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -92,6 +93,12 @@ public class SQLDeviceDaoTest {
     public void addValidDevice() throws Exception {
         String code = deviceDao.addDevice(EXISTING_ACC_UUID, NEW_DEVICE);
         assertTrue(code.length() == SQLDeviceDao.VERIFY_CODE_LENGTH);
+    }
+
+    @Test(expected = PwCryptException.class)
+    public void addDeviceThrowsException() throws Exception {
+        TestDatabaseManager.deleteTestDatabase();
+        deviceDao.addDevice(EXISTING_ACC_UUID, NEW_DEVICE);
     }
 
     @Test
