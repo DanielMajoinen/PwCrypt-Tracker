@@ -21,7 +21,7 @@ public class SQLAccountDao implements AccountDao {
       "SELECT count(*) AS count FROM `account` WHERE 'email' = :email";
 
     // Query to create a new account
-    private static final String CREATE_ACCOUNT_QUERY =
+    static final String CREATE_ACCOUNT_QUERY =
       "INSERT INTO `account` ('account_uuid', 'email') " +
         "VALUES (:account_uuid, :email)";
 
@@ -83,12 +83,11 @@ public class SQLAccountDao implements AccountDao {
      *
      * @param email The email address to check for.
      * @return True if the email is already in use, or false otherwise.
-     * @throws PwCryptException If any exception occurs accessing the database.
      */
     @Override
-    public boolean accountExists(String email) throws PwCryptException {
+    public boolean accountExists(String email) {
         try {
-            return 0 > databaseController
+            return 0 < databaseController
               .prepareQuery(ACCOUNT_EXISTS_QUERY)
               .setParameter(":email", email)
               .executeAndMap(resultSet ->
@@ -106,12 +105,9 @@ public class SQLAccountDao implements AccountDao {
      * @param device Device information
      * @return The verification codes generated for the new user, separated
      * by a colon (account_code:device_code).
-     * @throws PwCryptException If there is an unexpected affected row count
-     * when inserting into the database, or database error creating the account.
      */
     @Override
-    public String[] createAccount(String email, Device device)
-      throws PwCryptException {
+    public String[] createAccount(String email, Device device) {
         /* Generate an account UUID */
         String uuid = UUID.randomUUID().toString();
         /* Generate verification codes */
