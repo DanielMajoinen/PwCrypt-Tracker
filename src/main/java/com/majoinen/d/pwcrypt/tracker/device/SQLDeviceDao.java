@@ -1,6 +1,8 @@
 package com.majoinen.d.pwcrypt.tracker.device;
 
 import com.majoinen.d.database.DatabaseController;
+import com.majoinen.d.database.exception.DBUtilsException;
+import com.majoinen.d.pwcrypt.tracker.exception.PwCryptException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +13,22 @@ import java.util.Map;
  * @version 1.0, 5/7/17
  */
 public class SQLDeviceDao implements DeviceDao {
+
+    // Query to check if a device already exists in the database
+    private static final String DEVICE_EXISTS_QUERY =
+      "SELECT count(*) AS count FROM device WHERE " +
+        "account_uuid = :account_uuid AND device_uuid = :device_uuid";
+
+    // Query to insert new device information
+    public static final String CREATE_DEVICE_QUERY =
+      "INSERT INTO device (device_uuid, account_uuid, ip_address, " +
+        "platform, public_key) VALUES (:device_uuid, :account_uuid, " +
+        ":ip_address, :platform, :public_key)";
+
+    // Query to insert device verification code
+    public static final String INSERT_DEVICE_VERIFY_CODE =
+      "INSERT INTO device_verify_code (device_uuid, verify_code) " +
+        "VALUES (:device_uuid, :verify_code)";
 
     static final int VERIFY_CODE_LENGTH = 20;
 
@@ -49,7 +67,15 @@ public class SQLDeviceDao implements DeviceDao {
      */
     @Override
     public boolean deviceExists(String accountUUID, String deviceUUID) {
-        return false;
+        try {
+            return 0 < databaseController
+              .prepareQuery(DEVICE_EXISTS_QUERY)
+              .setParameter(":account_uuid", accountUUID)
+              .setParameter(":device_uuid", deviceUUID)
+              .executeAndMap(resultSet -> resultSet.getInt("count"));
+        } catch(DBUtilsException e) {
+            throw new PwCryptException("Error checking if device exists", e);
+        }
     }
 
     /**
