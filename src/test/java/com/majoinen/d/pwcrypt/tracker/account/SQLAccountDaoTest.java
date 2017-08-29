@@ -32,9 +32,6 @@ public class SQLAccountDaoTest {
     private static final String EXISTING_ACC_UUID =
       "92a37290-728a-49f2-9589-57378acb3adc";
 
-    private static final String EXISTING_DEV_UUID =
-      "d1ae9719-6001-486c-bc10-2b89b43f26ee";
-
     private DatabaseController databaseController;
     private SQLAccountDao accountDao;
 
