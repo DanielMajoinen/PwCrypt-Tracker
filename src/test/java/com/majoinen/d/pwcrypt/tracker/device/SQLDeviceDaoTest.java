@@ -103,9 +103,15 @@ public class SQLDeviceDaoTest {
 
     @Test
     public void listAllDevices() throws Exception {
-        // TODO: Query to add new device
-        List<Device> deviceList = deviceDao.listAllDevices(EXISTING_ACC_UUID,
-          EXISTING_DEV_UUID);
+        databaseController.prepareQuery(SQLDeviceDao.CREATE_DEVICE_QUERY)
+          .setParameter(":device_uuid", "97902f80-c1ea-44af-b2ef-361793e36f51")
+          .setParameter(":account_uuid", EXISTING_ACC_UUID)
+          .setParameter(":ip_address", "192.168.0.3")
+          .setParameter(":platform", "Mobile")
+          .setParameter(":public_key", "pubKey3")
+          .executeUpdate();
+        List<Device> deviceList =
+          deviceDao.listAllDevices(EXISTING_ACC_UUID, EXISTING_DEV_UUID);
         assertTrue(!deviceList.isEmpty());
         assertTrue(deviceList.size() == 1);
     }
