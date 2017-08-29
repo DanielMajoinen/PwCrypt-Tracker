@@ -23,9 +23,9 @@ public interface DeviceDao {
      *
      * @param accountUUID The UUID of the user.
      * @param device The device info.
-     * @return True if the device is added successfully, or false otherwise.
+     * @return Activation code for the new device.
      */
-    boolean addDevice(String accountUUID, Device device);
+    String addDevice(String accountUUID, Device device);
 
     /**
      * Authorises a device to an account. When the user signs in on a new

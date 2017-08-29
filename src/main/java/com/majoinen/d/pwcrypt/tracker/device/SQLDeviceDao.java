@@ -12,6 +12,8 @@ import java.util.Map;
  */
 public class SQLDeviceDao implements DeviceDao {
 
+    static final int VERIFY_CODE_LENGTH = 20;
+
     private static Map<DatabaseController, SQLDeviceDao> map;
     private DatabaseController databaseController;
 
@@ -56,11 +58,11 @@ public class SQLDeviceDao implements DeviceDao {
      *
      * @param accountUUID The UUID of the user.
      * @param device      The device info.
-     * @return True if the device is added successfully, or false otherwise.
+     * @return Activation code for the new device.
      */
     @Override
-    public boolean addDevice(String accountUUID, Device device) {
-        return false;
+    public String addDevice(String accountUUID, Device device) {
+        return null;
     }
 
     /**
