@@ -27,9 +27,9 @@ public class SQLDeviceDao implements DeviceDao {
         ":ip_address, :platform, :public_key)";
 
     // Query to insert device verification code
-    public static final String INSERT_DEVICE_VERIFY_CODE =
-      "INSERT INTO device_verify_code (device_uuid, verify_code) " +
-        "VALUES (:device_uuid, :verify_code)";
+    public static final String INSERT_DEVICE_VERIFY_CODE_QUERY =
+      "INSERT INTO device_verify_code (device_uuid, account_uuid, " +
+        "verify_code) VALUES (:device_uuid, :account_uuid, :verify_code)";
 
     static final int VERIFY_CODE_LENGTH = 20;
 
@@ -103,7 +103,7 @@ public class SQLDeviceDao implements DeviceDao {
               .setParameter(":ip_address", device.getIp())
               .setParameter(":platform", device.getPlatform())
               .setParameter(":public_key", device.getPublicKey())
-              .prepareBatchQuery(SQLDeviceDao.INSERT_DEVICE_VERIFY_CODE)
+              .prepareBatchQuery(SQLDeviceDao.INSERT_DEVICE_VERIFY_CODE_QUERY)
               .setParameter(":device_uuid", device.getUuid())
               .setParameter(":verify_code", verifyCode)
               .executeUpdate()) {
