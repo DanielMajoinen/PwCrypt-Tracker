@@ -18,27 +18,27 @@ public class SQLAccountDao implements AccountDao {
 
     // Query to check if an account already exists in the database
     private static final String ACCOUNT_EXISTS_QUERY =
-      "SELECT count(*) AS count FROM `account` WHERE 'email' = :email";
+      "SELECT count(*) AS count FROM account WHERE email = :email";
 
     // Query to create a new account
     static final String CREATE_ACCOUNT_QUERY =
-      "INSERT INTO `account` ('account_uuid', 'email') " +
+      "INSERT INTO account (account_uuid, email) " +
         "VALUES (:account_uuid, :email)";
 
     // Query to insert new device information
     private static final String CREATE_DEVICE_QUERY =
-      "INSERT INTO `device` ('device_uuid', 'account_uuid', 'ip_address', " +
-        "'platform', 'public_key') VALUES (:device_uuid, :account_uuid, " +
+      "INSERT INTO device (device_uuid, account_uuid, ip_address, " +
+        "platform, public_key) VALUES (:device_uuid, :account_uuid, " +
         ":ip_address, :platform, :public_key)";
 
     // Query to insert account verification code
     private static final String INSERT_ACCOUNT_VERIFY_CODE =
-      "INSERT INTO `account_verify_code` ('account_uuid', 'verify_code') " +
+      "INSERT INTO account_verify_code (account_uuid, verify_code) " +
         "VALUES (:account_uuid, :verify_code)";
 
     // Query to insert device verification code
     private static final String INSERT_DEVICE_VERIFY_CODE =
-      "INSERT INTO `device_verify_code` ('device_uuid', 'verify_code') " +
+      "INSERT INTO device_verify_code (device_uuid, verify_code) " +
         "VALUES (:device_uuid, :verify_code)";
 
     private static final int VERIFICATION_CODES_SIZE = 2;
