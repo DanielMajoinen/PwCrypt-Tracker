@@ -47,6 +47,8 @@ public class SQLDeviceDao implements DeviceDao {
         "AND account_uuid = (SELECT account_uuid FROM device_verify_code " +
         "WHERE verify_code = :verify_code)";
 
+    // Query to select all devices, other than the provided device, that
+    // belong to an account
     public static final String SELECT_ALL_DEVICES_QUERY =
       "SELECT device_uuid, ip_address, platform, public_key FROM device " +
         "WHERE account_uuid = :account_uuid " +
