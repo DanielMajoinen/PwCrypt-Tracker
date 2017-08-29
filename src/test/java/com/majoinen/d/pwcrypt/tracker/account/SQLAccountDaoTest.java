@@ -48,7 +48,7 @@ public class SQLAccountDaoTest {
 
     @After
     public void afterEachTest() throws Exception {
-        // TestDatabaseManager.deleteTestDatabase();
+        TestDatabaseManager.deleteTestDatabase();
     }
 
     @Test
