@@ -109,7 +109,7 @@ public class SQLAccountDao implements AccountDao {
     @Override
     public String[] createAccount(String email, Device device) {
         /* Generate an account UUID */
-        String uuid = UUID.randomUUID().toString();
+        String accountUUID = UUID.randomUUID().toString();
         /* Generate verification codes */
         String[] verifyCodes = new String[VERIFICATION_CODES_SIZE];
         verifyCodes[ACCOUNT_CODE_INDEX] =
@@ -120,19 +120,19 @@ public class SQLAccountDao implements AccountDao {
         try {
             if(NEW_ACCOUNT_EXPECTED_AFFECTED_ROWS == databaseController
               .prepareBatchQuery(CREATE_ACCOUNT_QUERY)
-              .setParameter(":account_uuid", uuid)
+              .setParameter(":account_uuid", accountUUID)
               .setParameter(":email", email)
               .prepareBatchQuery(INSERT_ACCOUNT_VERIFY_CODE)
-              .setParameter(":account_uuid", uuid)
+              .setParameter(":account_uuid", accountUUID)
               .setParameter(":verify_code", verifyCodes[ACCOUNT_CODE_INDEX])
               .prepareBatchQuery(CREATE_DEVICE_QUERY)
-              .setParameter(":device_uuid", device.getUuid().toString())
-              .setParameter(":account_uuid", uuid)
+              .setParameter(":device_uuid", device.getUuid())
+              .setParameter(":account_uuid", accountUUID)
               .setParameter(":ip_address", device.getIp())
               .setParameter(":platform", device.getPlatform())
               .setParameter(":public_key", device.getPublicKey())
               .prepareBatchQuery(INSERT_DEVICE_VERIFY_CODE)
-              .setParameter(":device_uuid", device.getUuid().toString())
+              .setParameter(":device_uuid", device.getUuid())
               .setParameter(":verify_code", verifyCodes[DEVICE_CODE_INDEX])
               .executeUpdate()) {
                 return verifyCodes;
