@@ -49,7 +49,7 @@ public class SQLAccountDao implements AccountDao {
 
     private static final int NEW_ACCOUNT_EXPECTED_AFFECTED_ROWS = 4;
 
-    private static final int VERIFY_CODE_LENGTH = 20;
+    static final int VERIFY_CODE_LENGTH = 20;
 
     private static Map<DatabaseController, SQLAccountDao> map;
     private DatabaseController databaseController;
