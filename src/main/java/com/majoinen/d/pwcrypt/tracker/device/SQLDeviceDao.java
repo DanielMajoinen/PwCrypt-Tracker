@@ -31,6 +31,21 @@ public class SQLDeviceDao implements DeviceDao {
       "INSERT INTO device_verify_code (device_uuid, account_uuid, " +
         "verify_code) VALUES (:device_uuid, :account_uuid, :verify_code)";
 
+    // Query to verify a device if a matching code is found
+    public static final String VERIFY_DEVICE_UPDATE_QUERY =
+      "UPDATE device SET verified = 1 " +
+        "WHERE device_uuid = (SELECT device_uuid FROM device_verify_code " +
+        "WHERE verify_code = :verify_code) " +
+        "AND account_uuid = (SELECT account_uuid FROM device_verify_code " +
+        "WHERE verify_code = :verify_code)";
+
+    public static final String VERIFY_DEVICE_SELECT_QUERY =
+      "SELECT verified FROM device " +
+        "WHERE device_uuid = (SELECT device_uuid FROM device_verify_code " +
+        "WHERE verify_code = :verify_code) " +
+        "AND account_uuid = (SELECT account_uuid FROM device_verify_code " +
+        "WHERE verify_code = :verify_code)";
+
     static final int VERIFY_CODE_LENGTH = 20;
 
     private static final int NEW_DEVICE_EXPECTED_AFFECTED_ROWS = 2;
@@ -105,6 +120,7 @@ public class SQLDeviceDao implements DeviceDao {
               .setParameter(":public_key", device.getPublicKey())
               .prepareBatchQuery(SQLDeviceDao.INSERT_DEVICE_VERIFY_CODE_QUERY)
               .setParameter(":device_uuid", device.getUuid())
+              .setParameter(":account_uuid", accountUUID)
               .setParameter(":verify_code", verifyCode)
               .executeUpdate()) {
                 return verifyCode;
@@ -126,7 +142,18 @@ public class SQLDeviceDao implements DeviceDao {
      */
     @Override
     public boolean verifyDevice(String code) {
-        return false;
+        try {
+            databaseController
+              .prepareQuery(VERIFY_DEVICE_UPDATE_QUERY)
+              .setParameter(":verify_code", code)
+              .executeUpdate();
+            return 1 == databaseController
+              .prepareQuery(VERIFY_DEVICE_SELECT_QUERY)
+              .setParameter(":verify_code", code)
+              .executeAndMap(resultSet -> resultSet.getInt("verified"));
+        } catch(DBUtilsException e) {
+            throw new PwCryptException("Error verifying device", e);
+        }
     }
 
     /**
