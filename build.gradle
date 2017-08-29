@@ -22,6 +22,11 @@ repositories {
 }
 
 dependencies {
+    compile files('libs/DatabaseUtils-1.0.jar')
+    compile files('libs/EncryptionUtils-1.0.jar')
+    compile     "com.google.code.gson:gson:2.8.1"               // Gson
+    compile     "javax.mail:mail:1.5.0-b01"                     // JavaMail
+    compile     "javax.mail:javax.mail-api:1.6.0"               // JavaMail-API
     compile     "org.slf4j:slf4j-api:1.7.25"                    // slf4j-api
     compile     "org.slf4j:slf4j-simple:1.7.25"                 // slf4j-simple
     compile     "com.sparkjava:spark-core:2.6.0"                // Spark
