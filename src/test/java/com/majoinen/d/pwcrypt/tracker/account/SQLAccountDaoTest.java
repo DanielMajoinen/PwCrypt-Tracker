@@ -48,7 +48,7 @@ public class SQLAccountDaoTest {
 
     @After
     public void afterEachTest() throws Exception {
-        TestDatabaseManager.deleteTestDatabase();
+        // TestDatabaseManager.deleteTestDatabase();
     }
 
     @Test
@@ -78,11 +78,8 @@ public class SQLAccountDaoTest {
     public void createValidAccount() throws Exception {
         Device device = new Device(NEW_DEV_UUID, NEW_DEV_IP,
           NEW_DEV_PLATFORM, NEW_DEV_PUBLIC_KEY);
-        String[] codes = accountDao.createAccount(NEW_EMAIL, device);
-        assertTrue(codes[SQLAccountDao.ACCOUNT_CODE_INDEX].length() ==
-          SQLAccountDao.VERIFY_CODE_LENGTH);
-        assertTrue(codes[SQLAccountDao.DEVICE_CODE_INDEX].length() ==
-          SQLAccountDao.VERIFY_CODE_LENGTH);
+        String code = accountDao.createAccount(NEW_EMAIL, device);
+        assertTrue(code.length() == SQLAccountDao.VERIFY_CODE_LENGTH);
     }
 
     @Test(expected = PwCryptException.class)
