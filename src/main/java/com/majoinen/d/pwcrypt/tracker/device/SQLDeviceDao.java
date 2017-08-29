@@ -39,12 +39,18 @@ public class SQLDeviceDao implements DeviceDao {
         "AND account_uuid = (SELECT account_uuid FROM device_verify_code " +
         "WHERE verify_code = :verify_code)";
 
+    // Query to verify a device has been verified with only a verification code
     public static final String VERIFY_DEVICE_SELECT_QUERY =
       "SELECT verified FROM device " +
         "WHERE device_uuid = (SELECT device_uuid FROM device_verify_code " +
         "WHERE verify_code = :verify_code) " +
         "AND account_uuid = (SELECT account_uuid FROM device_verify_code " +
         "WHERE verify_code = :verify_code)";
+
+    public static final String SELECT_ALL_DEVICES_QUERY =
+      "SELECT device_uuid, ip_address, platform, public_key FROM device " +
+        "WHERE account_uuid = :account_uuid " +
+        "AND device_uuid != :device_uuid";
 
     static final int VERIFY_CODE_LENGTH = 20;
 
@@ -166,6 +172,19 @@ public class SQLDeviceDao implements DeviceDao {
      */
     @Override
     public List<Device> listAllDevices(String accountUUID, String deviceUUID) {
-        return null;
+        try {
+            return databaseController
+              .prepareQuery(SELECT_ALL_DEVICES_QUERY)
+              .setParameter(":account_uuid", accountUUID)
+              .setParameter(":device_uuid", deviceUUID)
+              .executeAndMapAll(resultSet -> new Device(
+                resultSet.getString("device_uuid"),
+                resultSet.getString("ip_address"),
+                resultSet.getString("platform"),
+                resultSet.getString("public_key")
+              ));
+        } catch(DBUtilsException e) {
+            throw new PwCryptException("Error getting device list", e);
+        }
     }
 }
