@@ -152,4 +152,10 @@ public class SQLDeviceDaoTest {
         assertTrue(!deviceList.isEmpty());
         assertTrue(deviceList.size() == 1);
     }
+
+    @Test(expected = PwCryptException.class)
+    public void listAllDevicesThrowsException() throws Exception {
+        TestDatabaseManager.deleteTestDatabase();
+        deviceDao.listAllDevices(EXISTING_ACC_UUID, EXISTING_DEV_UUID);
+    }
 }
