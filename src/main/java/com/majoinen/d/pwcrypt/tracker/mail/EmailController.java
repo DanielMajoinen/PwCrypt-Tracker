@@ -26,7 +26,7 @@ public class EmailController {
      * @param deviceUUID The users device UUID.
      * @param code The users verification code.
      */
-    public static void sendRegisterEmail(String recipient, String deviceUUID,
+    public static boolean sendRegisterEmail(String recipient, String deviceUUID,
       String code) {
         try {
             Message message = new MimeMessage(Gmail.createSession());
@@ -38,7 +38,7 @@ public class EmailController {
             message.setSubject(REGISTER_SUBJECT);
             message.setText(DEVICE_UUID_PROMPT + deviceUUID +
               REGISTER_TEXT + code);
-            sendMessage(message);
+            return sendMessage(message);
         } catch(MessagingException e) {
             throw new PwCryptException("Error creating message", e);
         }
@@ -49,9 +49,10 @@ public class EmailController {
      *
      * @param message The message to send.
      */
-    private static void sendMessage(Message message) {
+    private static boolean sendMessage(Message message) {
         try {
             Transport.send(message);
+            return true;
         } catch(MessagingException e) {
             throw new PwCryptException("Error sending message", e);
         }
