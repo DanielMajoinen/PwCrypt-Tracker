@@ -15,7 +15,7 @@ public class Path {
         public static final String VERIFY = "/verify/";
 
         // Route for logging in on a new device with existing account
-        public static final String LOGIN = "/login/";
+        public static final String NEW_DEVICE = "/new-device/";
 
         // Route for listing all devices associated with account
         public static final String LIST_ALL_DEVICES = "/list/";
