@@ -1,5 +1,6 @@
 # PwCrypt-Tracker
 
+[![Build Status](https://travis-ci.com/DanielMajoinen/PwCrypt-Tracker.svg?token=aBjt9HY25c6nESBMDy73&branch=develop)](https://travis-ci.com/DanielMajoinen/PwCrypt-Tracker)
 
 Allow PwCrypt to find other devices via RESTful API.
 
