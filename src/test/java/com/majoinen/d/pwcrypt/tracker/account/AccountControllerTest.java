@@ -4,10 +4,11 @@ import com.despegar.http.client.HttpResponse;
 import com.despegar.http.client.PostMethod;
 import com.despegar.sparkjava.test.SparkServer;
 import com.google.gson.Gson;
+import com.majoinen.d.encryption.pkc.PKCUtils;
+import com.majoinen.d.encryption.utils.EncryptionKeyGenerator;
 import com.majoinen.d.encryption.utils.Tools;
 import com.majoinen.d.pwcrypt.tracker.spark.ResponseMessage;
 import com.majoinen.d.pwcrypt.tracker.spark.SignedJSON;
-import com.majoinen.d.pwcrypt.tracker.util.KeyManager;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -28,8 +29,6 @@ import static org.mockito.Mockito.when;
  * @version 1.0, 30/8/17
  */
 public class AccountControllerTest {
-
-    private static final String SLASH = "/";
 
     private static final String NEW_EMAIL = "dmajoinen@gmail.com";
 
@@ -104,8 +103,8 @@ public class AccountControllerTest {
 
     private HttpResponse executeNewRegisterRequest() throws Exception {
         // Generate keypair
-        KeyPair keyPair = KeyManager.generateKeyPair("RSA", 2048);
-        String publicKey = KeyManager.serializeRSAPublicKey((RSAPublicKey)
+        KeyPair keyPair = EncryptionKeyGenerator.generateKeyPair("RSA", 2048);
+        String publicKey = PKCUtils.serializeRSAPublicKey((RSAPublicKey)
           keyPair.getPublic());
 
         // Create new register request
@@ -114,7 +113,7 @@ public class AccountControllerTest {
         String bodyOriginal = GSON.toJson(registerRequest);
 
         // Sign register request
-        String bodySigned = KeyManager.sign("SHA256withRSA",
+        String bodySigned = PKCUtils.sign("SHA256withRSA",
           keyPair.getPrivate(), bodyOriginal.getBytes());
 
         // Create SignedJSON
