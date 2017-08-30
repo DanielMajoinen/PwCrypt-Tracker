@@ -170,7 +170,7 @@ public class SQLDeviceDaoTest {
 
     @Test
     public void getValidPublicKey() throws Exception {
-        String publicKey = deviceDao.getPublicKey(NEW_DEV_UUID,
+        String publicKey = deviceDao.getPublicKey(EXISTING_ACC_UUID,
           EXISTING_DEV_UUID);
         assertNotNull(publicKey);
         assertNotNull(PKCUtils.deserializeRSAPublicKey(publicKey));
