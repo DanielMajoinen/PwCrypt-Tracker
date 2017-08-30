@@ -1,6 +1,7 @@
 package com.majoinen.d.pwcrypt.tracker.device;
 
 import com.majoinen.d.database.DatabaseController;
+import com.majoinen.d.encryption.pkc.PKCUtils;
 import com.majoinen.d.pwcrypt.tracker.TestDatabaseManager;
 import com.majoinen.d.pwcrypt.tracker.account.SQLAccountDao;
 import com.majoinen.d.pwcrypt.tracker.exception.PwCryptException;
@@ -10,6 +11,8 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -34,7 +37,13 @@ public class SQLDeviceDaoTest {
 
     private static final String EXISTING_DEV_PLATFORM = "Desktop";
 
-    private static final String EXISTING_DEV_PUBLIC_KEY = "pubkey1";
+    private static final String EXISTING_DEV_PUBLIC_KEY =
+      "AJPnZFlGYOjKvhmO7OisPb6PWro7UbYaI/MA+h5mTucFoAxnTW0JlBorE6KBYge1vwhGVV" +
+        "VeDw8s6/gz5KV1dMD0dEcWpWz6ATSpUlwov9WX9RtV1R6xyMeMHXOnjjBXDqw/aIFI85" +
+        "HNlP+v+/72mp7KDs7Q1qxPMoFFLcVoocQzwY/KsQE6uBFXe6Wc48ozxqOdBeR6D9JCtI" +
+        "n6FZ8gbtuoEIwcXqFll2zKLlpO+7zu7Few+zcFGjg/P47mVFNtPAgcWzAE/A4FeaNt09" +
+        "1qFaWsLGjoI71OJLmLRxaMYNYZjXW8OOnZrAgIpnB2y9Hc2WhuLkYbxND8+oSzlElHTs" +
+        "8=:AQAB";
 
     private static final String EXISTING_DEV_VERIFY_CODE = "CODE";
 
@@ -157,5 +166,25 @@ public class SQLDeviceDaoTest {
     public void listAllDevicesThrowsException() throws Exception {
         TestDatabaseManager.deleteTestDatabase();
         deviceDao.listAllDevices(EXISTING_ACC_UUID, EXISTING_DEV_UUID);
+    }
+
+    @Test
+    public void getValidPublicKey() throws Exception {
+        String publicKey = deviceDao.getPublicKey(NEW_DEV_UUID,
+          EXISTING_DEV_UUID);
+        assertNotNull(publicKey);
+        assertNotNull(PKCUtils.deserializeRSAPublicKey(publicKey));
+    }
+
+    @Test
+    public void getNonExistingPublicKey() throws Exception {
+        String publicKey = deviceDao.getPublicKey(NEW_DEV_UUID, NEW_DEV_UUID);
+        assertNull(publicKey);
+    }
+
+    @Test(expected = PwCryptException.class)
+    public void getPublicKeyThrowsException() throws Exception {
+        TestDatabaseManager.deleteTestDatabase();
+        deviceDao.getPublicKey(EXISTING_ACC_UUID, EXISTING_DEV_UUID);
     }
 }
