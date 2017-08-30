@@ -1,39 +1,28 @@
 package com.majoinen.d.pwcrypt.tracker.device;
 
-import spark.Request;
-
-import java.util.UUID;
-
 /**
  * @author Daniel Majoinen
  * @version 1.0, 12/7/17
  */
 public class Device {
 
-    private UUID uuid;
+    private String uuid;
     private String ip;
     private String platform;
     private String publicKey;
 
     public Device(String uuid, String ip, String platform, String publicKey) {
-        this.uuid = UUID.fromString(uuid);
+        this.uuid = uuid;
         this.ip = ip;
         this.platform = platform;
         this.publicKey = publicKey;
     }
 
-    public Device(Request request) {
-        this.uuid = UUID.fromString(request.params(":device_uuid"));
-        this.ip = request.ip();
-        this.platform = request.userAgent();
-        this.publicKey = request.params(":public_key");
-    }
-
-    public UUID getUuid() {
+    public String getUuid() {
         return uuid;
     }
 
-    public void setUuid(UUID uuid) {
+    public void setUuid(String uuid) {
         this.uuid = uuid;
     }
 
