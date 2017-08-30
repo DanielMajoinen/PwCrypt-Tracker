@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
  */
 public class AccountControllerTest {
 
-    private static final String NEW_EMAIL = "dmajoinen@gmail.com";
+    private static final String NEW_EMAIL = "email@domain.com";
 
     private static final String NEW_DEV_UUID =
       "f0658a55-660d-4f53-979c-411e75271ed0";
@@ -84,8 +84,8 @@ public class AccountControllerTest {
 
     @Test
     public void registerValidAccount() throws Exception {
-        when(AccountControllerTestSparkApp.accountDao.accountExists(
-          anyString())).thenReturn(false);
+        when(AccountControllerTestSparkApp.accountDao
+          .accountExists(anyString())).thenReturn(false);
         when(AccountControllerTestSparkApp.accountDao.createAccount(
           anyString(), any())).thenReturn(Tools.generateRandomString(SQLAccountDao.VERIFY_CODE_LENGTH, Tools.ALPHA_NUMERIC));
 
