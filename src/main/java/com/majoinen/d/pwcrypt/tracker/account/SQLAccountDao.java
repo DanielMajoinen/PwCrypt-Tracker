@@ -115,4 +115,15 @@ public class SQLAccountDao implements AccountDao {
             throw new PwCryptException("Error creating new account", e);
         }
     }
+
+    /**
+     * Gets the account UUID associated with an email.
+     *
+     * @param email The email of the user.
+     * @return The account UUID of the user.
+     */
+    @Override
+    public String getAccountUUID(String email) {
+        return null;
+    }
 }
