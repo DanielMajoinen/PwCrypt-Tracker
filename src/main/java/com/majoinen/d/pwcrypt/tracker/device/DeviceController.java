@@ -42,6 +42,7 @@ public class DeviceController {
     public void createRoutes() {
         post(Path.Web.VERIFY, verify, GSON::toJson);
         post(Path.Web.NEW_DEVICE, newDevice, GSON::toJson);
+        post(Path.Web.LIST_ALL_DEVICES, list, GSON::toJson);
     }
 
     /**
@@ -110,6 +111,28 @@ public class DeviceController {
         // TODO: Uncomment before deploy - Prevents emails being sent
         // EmailController.sendRegisterEmail(email, deviceUUID, code);
         return new ResponseMessage("Verification code has been sent");
+    };
+
+    /**
+     * Provide a list of all other devices with the following steps:
+     * 1. Verify signature
+     * 2. Get device list
+     */
+    private Route list = (Request request, Response response) -> {
+        SignedJSON signedJSON = GSON.fromJson(request.body(), SignedJSON.class);
+        ListDeviceRequest listDeviceRequest = GSON.fromJson(signedJSON
+          .getOriginal(), ListDeviceRequest.class);
+        // Get variables from request
+        String accountUUID = listDeviceRequest.getAccountUUID();
+        String deviceUUID = listDeviceRequest.getDeviceUUID();
+        LOGGER.debug("Received new-device request from: " +
+          accountUUID +" - "+ deviceUUID +" - "+request.ip());
+        // Verify signature
+        LOGGER.debug("Verifying signature");
+        if(!verifySignedJSON(accountUUID, deviceUUID, signedJSON))
+            return error400(response, "Verifying signature failed");
+        // Get all devices
+        return deviceDao.listAllDevices(accountUUID, deviceUUID);
     };
 
     /**
