@@ -33,7 +33,9 @@ dependencies {
     compile     "org.xerial:sqlite-jdbc:3.19.3"                 // SQLite
     testCompile "junit:junit:4.12"                              // JUnit
     testCompile "com.despegar:spark-test:1.1.4"                 // Spark-test
-    testCompile "org.mockito:mockito-core:2.+"                  // Mockito
+    testCompile "org.mockito:mockito-core:2.8.+"                // Mockito
+    testCompile "org.powermock:powermock-module-junit4:1.7.1"   // PowerMock
+    testCompile "org.powermock:powermock-api-mockito2:1.7.1"    // PowerMock
 }
 
 // Package the app into a jar - optional version number
