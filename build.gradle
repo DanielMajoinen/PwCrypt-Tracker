@@ -32,6 +32,7 @@ dependencies {
     compile     "com.sparkjava:spark-core:2.6.0"                // Spark
     compile     "org.xerial:sqlite-jdbc:3.19.3"                 // SQLite
     testCompile "junit:junit:4.12"                              // JUnit
+    testCompile "com.despegar:spark-test:1.1.4"                 // Spark-test
     testCompile "org.mockito:mockito-core:2.+"                  // Mockito
 }
 
