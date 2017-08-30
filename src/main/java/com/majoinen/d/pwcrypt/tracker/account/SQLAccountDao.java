@@ -26,6 +26,9 @@ public class SQLAccountDao implements AccountDao {
       "INSERT INTO account (account_uuid, email) " +
         "VALUES (:account_uuid, :email)";
 
+    public static final String SELECT_ACCOUNT_UUID_QUERY =
+      "SELECT account_uuid FROM account WHERE email = :email";
+
     private static final int NEW_ACCOUNT_EXPECTED_AFFECTED_ROWS = 3;
 
     static final int VERIFY_CODE_LENGTH = 5;
@@ -124,6 +127,12 @@ public class SQLAccountDao implements AccountDao {
      */
     @Override
     public String getAccountUUID(String email) {
-        return null;
+        try {
+            return databaseController.prepareQuery(SELECT_ACCOUNT_UUID_QUERY)
+              .setParameter(":email", email)
+              .executeAndMap(resultSet -> resultSet.getString("account_uuid"));
+        } catch(DBUtilsException e) {
+            throw new PwCryptException("Error getting account UUID", e);
+        }
     }
 }
