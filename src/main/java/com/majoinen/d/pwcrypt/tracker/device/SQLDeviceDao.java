@@ -68,7 +68,7 @@ public class SQLDeviceDao implements DeviceDao {
         "WHERE account_uuid = :account_uuid " +
         "AND device_uuid = :device_uuid";
 
-    static final int VERIFY_CODE_LENGTH = 20;
+    static final int VERIFY_CODE_LENGTH = 5;
 
     private static final int NEW_DEVICE_EXPECTED_AFFECTED_ROWS = 2;
 
