@@ -4,7 +4,7 @@ apply plugin: "java"            // Apply the java plugin to add support for Java
 apply plugin: "org.sonarqube"   // Apply SonarQube plugin
 
 // Variables
-mainClassName           = "com.majoinen.d.app.PwCrypt"
+mainClassName           = "com.majoinen.d.pwcrypt.tracker.PwCryptTracker"
 def sonarqubeURL        = "http://d.majoinen.com/sonarqube"
 
 
@@ -32,7 +32,10 @@ dependencies {
     compile     "com.sparkjava:spark-core:2.6.0"                // Spark
     compile     "org.xerial:sqlite-jdbc:3.19.3"                 // SQLite
     testCompile "junit:junit:4.12"                              // JUnit
-    testCompile "org.mockito:mockito-core:2.+"                  // Mockito
+    testCompile "com.despegar:spark-test:1.1.4"                 // Spark-test
+    testCompile "org.mockito:mockito-core:2.8.+"                // Mockito
+    testCompile "org.powermock:powermock-module-junit4:1.7.1"   // PowerMock
+    testCompile "org.powermock:powermock-api-mockito2:1.7.1"    // PowerMock
 }
 
 // Package the app into a jar - optional version number

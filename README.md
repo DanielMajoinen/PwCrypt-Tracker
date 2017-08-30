@@ -13,7 +13,7 @@ It is worth noting that the master password, even hashed, is never transmitted/s
 
 When a new account is created:
 
-    /register/{email}/{device_uuid}/{public_key}
+    /register/:email/:device_uuid/:public_key/
 
 Response:
 
@@ -26,7 +26,7 @@ An email with a verify code, encrypted with the public key, will be sent.
 
 After registration the account must be verified with a code provided in an email. The appropriate private key will be used to decrypt the code.
 
-    /verify-email/{decrypted_code}
+    /verify-email/:verify_code/
 
 Response:
 
@@ -37,7 +37,7 @@ Response:
 
 If an account already exists, but has never been synced to current device:
 
-    /login/{email}/{device_uuid}/{public_key}
+    /login/:email/:device_uuid/:public_key/
 
 Response:
 
@@ -50,7 +50,7 @@ An email with a verify code, encrypted with the public key, will be sent.
 
 After logging in on a new device, the device/account must be verified with a code provided in an email. The appropriate private key will be used to decrypt the code.
 
-    /verify-device/{decrypted_code}
+    /verify-device/:decrypted_code/
 
 Response:
 
@@ -61,7 +61,7 @@ Response:
 
 When a device wants to find other devices associated with the account in order to sync.
 
-    /list/{account_uuid}/{device_uuid}
+    /list/:account_uuid/:device_uuid/
 
 Response:
 
