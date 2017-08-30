@@ -16,6 +16,10 @@ public class AccountController {
         this.accountDao = accountDao;
     }
 
+    public void createRoutes() {
+
+    }
+
     public Route register = (Request request, Response response) -> {
         return null;
     };
