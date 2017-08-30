@@ -7,7 +7,6 @@ import com.majoinen.d.pwcrypt.tracker.device.Device;
 import com.majoinen.d.pwcrypt.tracker.exception.PwCryptException;
 import com.majoinen.d.pwcrypt.tracker.log.LogManager;
 import com.majoinen.d.pwcrypt.tracker.log.Logger;
-import com.majoinen.d.pwcrypt.tracker.mail.EmailController;
 import com.majoinen.d.pwcrypt.tracker.spark.ResponseMessage;
 import com.majoinen.d.pwcrypt.tracker.spark.SignedJSON;
 import com.majoinen.d.pwcrypt.tracker.util.Path;
@@ -88,7 +87,8 @@ public class AccountController {
             String code = accountDao.createAccount(email,
               new Device(deviceUUID, ip, platform, publicKey));
             LOGGER.debug("Sending registration verification email: " + email);
-            EmailController.sendRegisterEmail(email, deviceUUID, code);
+            // TODO: Uncomment before deploy - Prevents emails being sent
+            // EmailController.sendRegisterEmail(email, deviceUUID, code);
             LOGGER.info("Successfully registered account: " + email);
             return true;
         } catch(PwCryptException e) {
