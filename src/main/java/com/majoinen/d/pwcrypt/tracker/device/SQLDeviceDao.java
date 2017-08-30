@@ -54,6 +54,10 @@ public class SQLDeviceDao implements DeviceDao {
         "WHERE account_uuid = :account_uuid " +
         "AND device_uuid != :device_uuid";
 
+    public static final String SELECT_PUBLIC_KEY =
+      "SELECT public_key FROM device " +
+        "WHERE account_uuid = :account_uuid AND device_uuid = :device_uuid";
+
     static final int VERIFY_CODE_LENGTH = 20;
 
     private static final int NEW_DEVICE_EXPECTED_AFFECTED_ROWS = 2;
@@ -187,6 +191,27 @@ public class SQLDeviceDao implements DeviceDao {
               ));
         } catch(DBUtilsException e) {
             throw new PwCryptException("Error getting device list", e);
+        }
+    }
+
+
+    /**
+     * Gets the PublicKey associated with the supplied account and device
+     * UUID's.
+     *
+     * @param accountUUID The UUID of the users account.
+     * @param deviceUUID The UUID of the users device.
+     * @return The PublicKey serialized and encoded in Base64.
+     */
+    @Override
+    public String getPublicKey(String accountUUID, String deviceUUID) {
+        try {
+            return databaseController.prepareQuery(SELECT_PUBLIC_KEY)
+              .setParameter(":account_uuid", accountUUID)
+              .setParameter(":device_uuid", deviceUUID)
+              .executeAndMap(resultSet -> resultSet.getString("public_key"));
+        } catch(DBUtilsException e) {
+            throw new PwCryptException("Error getting public key", e);
         }
     }
 }

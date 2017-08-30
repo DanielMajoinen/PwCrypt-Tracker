@@ -46,4 +46,14 @@ public interface DeviceDao {
      * @return A list of all other devices.
      */
     List<Device> listAllDevices(String accountUUID, String deviceUUID);
+
+    /**
+     * Gets the PublicKey associated with the supplied account and device
+     * UUID's.
+     *
+     * @param accountUUID The UUID of the users account.
+     * @param deviceUUID The UUID of the users device.
+     * @return The PublicKey serialized and encoded in Base64.
+     */
+    String getPublicKey(String accountUUID, String deviceUUID);
 }
