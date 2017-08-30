@@ -38,6 +38,15 @@ public interface DeviceDao {
     boolean verifyDevice(String code);
 
     /**
+     * Determines if a device is already verified. This can be used to resend
+     * a verification email.
+     *
+     * @param accountUUID The accounts UUID.
+     * @param deviceUUID The devices UUID.
+     * @return True if it is already verified, or false otherwise.
+     */
+    boolean isVerified(String accountUUID, String deviceUUID);
+
      * Supplies a list of all other devices associated with an account,
      * allowing the devices to begin communication with each other.
      *

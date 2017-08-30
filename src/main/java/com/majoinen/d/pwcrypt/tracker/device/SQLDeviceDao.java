@@ -58,6 +58,11 @@ public class SQLDeviceDao implements DeviceDao {
       "SELECT public_key FROM device " +
         "WHERE account_uuid = :account_uuid AND device_uuid = :device_uuid";
 
+    public static final String SELECT_DEVICE_VERIFIED_QUERY =
+      "SELECT verified FROM device " +
+        "WHERE device_uuid = :device_uuid " +
+        "AND account_uuid = :account_uuid";
+
     static final int VERIFY_CODE_LENGTH = 20;
 
     private static final int NEW_DEVICE_EXPECTED_AFFECTED_ROWS = 2;
@@ -169,6 +174,27 @@ public class SQLDeviceDao implements DeviceDao {
     }
 
     /**
+     * Determines if a device is already verified. This can be used to resend
+     * a verification email.
+     *
+     * @param accountUUID The accounts UUID.
+     * @param deviceUUID The devices UUID.
+     * @return True if it is already verified, or false otherwise.
+     */
+    @Override
+    public boolean isVerified(String accountUUID, String deviceUUID) {
+        try {
+            return 1 == databaseController
+              .prepareQuery(SELECT_DEVICE_VERIFIED_QUERY)
+              .setParameter(":device_uuid", deviceUUID)
+              .setParameter(":account_uuid", accountUUID)
+              .executeAndMap(resultSet -> resultSet.getInt("verified"));
+        } catch(DBUtilsException e) {
+            throw new PwCryptException("Error checking if device is verified",
+              e);
+        }
+    }
+
      * Supplies a list of all other devices associated with an account,
      * allowing the devices to begin communication with each other.
      *
