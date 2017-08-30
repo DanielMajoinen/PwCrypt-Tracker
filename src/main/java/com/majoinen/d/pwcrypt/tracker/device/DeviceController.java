@@ -62,7 +62,7 @@ public class DeviceController {
             return error400(response, "Account error");
         // Verify signature
         LOGGER.debug("Verifying signature");
-        if(!verifySignedVerificationRequest(accountUUID, deviceUUID, signedJSON))
+        if(!verifySignedJSON(accountUUID, deviceUUID, signedJSON))
             return error400(response, "Verifying signature failed");
         // Attempt to verify device
         LOGGER.debug("Attempting to verify device");
@@ -80,8 +80,8 @@ public class DeviceController {
      * @param signedJSON SignedJSON received from user.
      * @return True if the verification is successful, or false otherwise.
      */
-    private boolean verifySignedVerificationRequest(String accountUUID, String
-      deviceUUID, SignedJSON signedJSON) {
+    private boolean verifySignedJSON(String accountUUID, String deviceUUID,
+      SignedJSON signedJSON) {
         try {
             PublicKey publicKey = getUsersPublicKey(accountUUID, deviceUUID);
             if(publicKey == null)
@@ -108,10 +108,20 @@ public class DeviceController {
         String encodedKey = deviceDao.getPublicKey(accountUUID, deviceUUID);
         if(accountUUID == null || encodedKey == null)
             return null;
+        return deserializePublicKey(encodedKey);
+    }
+
+    /**
+     * Deserialize encoded public key, providing exception handling.
+     *
+     * @param encodedKey The encoded public key.
+     * @return The public key deserialized.
+     */
+    private PublicKey deserializePublicKey(String encodedKey) {
         try {
             return PKCUtils.deserializeRSAPublicKey(encodedKey);
         } catch(EncryptionUtilsException e) {
-            LOGGER.error("Error getting public key", e);
+            LOGGER.error("Error deserializing public key", e);
             return null;
         }
     }
