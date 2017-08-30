@@ -25,7 +25,8 @@ public class PwCryptTracker {
         AccountController accountController = new AccountController(
           SQLAccountDao.getInstance(databaseController));
         DeviceController deviceController = new DeviceController(
-          SQLDeviceDao.getInstance(databaseController));
+          SQLDeviceDao.getInstance(databaseController),
+          SQLAccountDao.getInstance(databaseController));
         // Initialise database and create routes
         databaseController.init();
         accountController.createRoutes();
