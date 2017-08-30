@@ -197,6 +197,8 @@ public class SQLDeviceDao implements DeviceDao {
         } catch(DBUtilsException e) {
             throw new PwCryptException("Error checking if device is verified",
               e);
+        } catch(NullPointerException e) {
+            return false;
         }
     }
 
@@ -215,7 +217,7 @@ public class SQLDeviceDao implements DeviceDao {
               .setParameter(":device_uuid", deviceUUID)
               .setParameter(":account_uuid", accountUUID)
               .executeAndMap(resultSet -> resultSet.getString("verify_code"));
-        } catch(DBUtilsException e) {
+        } catch(DBUtilsException | NullPointerException e) {
             throw new PwCryptException("Error checking if device is verified",
               e);
         }
