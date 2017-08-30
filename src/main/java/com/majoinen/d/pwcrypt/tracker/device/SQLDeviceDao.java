@@ -63,6 +63,11 @@ public class SQLDeviceDao implements DeviceDao {
         "WHERE device_uuid = :device_uuid " +
         "AND account_uuid = :account_uuid";
 
+    public static final String SELECT_DEVICE_VERIFY_CODE =
+      "SELECT verify_code FROM device_verify_code " +
+        "WHERE account_uuid = :account_uuid " +
+        "AND device_uuid = :device_uuid";
+
     static final int VERIFY_CODE_LENGTH = 20;
 
     private static final int NEW_DEVICE_EXPECTED_AFFECTED_ROWS = 2;
@@ -195,6 +200,28 @@ public class SQLDeviceDao implements DeviceDao {
         }
     }
 
+    /**
+     * Get the verification code for a device.
+     *
+     * @param accountUUID The accounts UUID.
+     * @param deviceUUID The devices UUID.
+     * @return The activation code.
+     */
+    @Override
+    public String getVerifyCode(String accountUUID, String deviceUUID) {
+        try {
+            return databaseController
+              .prepareQuery(SELECT_DEVICE_VERIFY_CODE)
+              .setParameter(":device_uuid", deviceUUID)
+              .setParameter(":account_uuid", accountUUID)
+              .executeAndMap(resultSet -> resultSet.getString("verify_code"));
+        } catch(DBUtilsException e) {
+            throw new PwCryptException("Error checking if device is verified",
+              e);
+        }
+    }
+
+    /**
      * Supplies a list of all other devices associated with an account,
      * allowing the devices to begin communication with each other.
      *

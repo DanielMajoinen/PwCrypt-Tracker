@@ -47,6 +47,16 @@ public interface DeviceDao {
      */
     boolean isVerified(String accountUUID, String deviceUUID);
 
+    /**
+     * Get the verification code for a device.
+     *
+     * @param accountUUID The accounts UUID.
+     * @param deviceUUID The devices UUID.
+     * @return The activation code.
+     */
+    String getVerifyCode(String accountUUID, String deviceUUID);
+
+    /**
      * Supplies a list of all other devices associated with an account,
      * allowing the devices to begin communication with each other.
      *
