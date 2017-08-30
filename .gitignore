@@ -126,6 +126,8 @@ gradle-app.setting
 
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar
+!DatabaseUtils-1.0.jar
+!EncryptionUtils-1.0.jar
 
 # Cache of project
 .gradletasknamecache
@@ -134,4 +136,3 @@ gradle-app.setting
 # gradle/wrapper/gradle-wrapper.properties
 
 # End of https://www.gitignore.io/api/java,macos,gradle,intellij
-!/src/main/java/com/majoinen/d/sort/sorter/decreaseandconquer/InsertionSorter.java
