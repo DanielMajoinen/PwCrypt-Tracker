@@ -15,16 +15,19 @@ public class EmailController {
 
     private static final String REGISTER_SUBJECT = "PwCrypt Email Verification";
 
-    private static final String REGISTER_TEXT = "Verification Code: ";
+    private static final String DEVICE_UUID_PROMPT = "Device UUID: \n";
+    private static final String REGISTER_TEXT = "\nVerification Code: \n";
 
     /**
      * Send a registration email to a newly registered user. This will send
      * them their verification code.
      *
      * @param recipient The newly registered users email address.
+     * @param deviceUUID The users device UUID.
      * @param code The users verification code.
      */
-    public static void sendRegisterEmail(String recipient, String code) {
+    public static void sendRegisterEmail(String recipient, String deviceUUID,
+      String code) {
         try {
             Message message = new MimeMessage(Gmail.createSession());
             message.setSentDate(new Date());
@@ -33,7 +36,8 @@ public class EmailController {
             message.setRecipient(Message.RecipientType.TO,
               new InternetAddress(recipient));
             message.setSubject(REGISTER_SUBJECT);
-            message.setText(REGISTER_TEXT + code);
+            message.setText(DEVICE_UUID_PROMPT + deviceUUID +
+              REGISTER_TEXT + code);
             sendMessage(message);
         } catch(MessagingException e) {
             throw new PwCryptException("Error creating message", e);
