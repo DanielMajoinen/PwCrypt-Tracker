@@ -9,8 +9,7 @@ package com.majoinen.d.pwcrypt.tracker.util;
 public class Path {
     public static class Web {
         // Route for registering an account
-        public static final String REGISTER =
-          "/register/:email/:device_uuid/:public_key/";
+        public static final String REGISTER = "/register/";
 
         // Route for logging in on a new device with existing account
         public static final String LOGIN =
