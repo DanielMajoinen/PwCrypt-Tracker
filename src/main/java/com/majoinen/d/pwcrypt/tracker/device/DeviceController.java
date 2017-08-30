@@ -41,7 +41,7 @@ public class DeviceController {
 
     public void createRoutes() {
         post(Path.Web.VERIFY, verify, GSON::toJson);
-        post(Path.Web.LOGIN, login, GSON::toJson);
+        post(Path.Web.NEW_DEVICE, newDevice, GSON::toJson);
     }
 
     /**
@@ -70,6 +70,46 @@ public class DeviceController {
             return error400(response, "Failed to verify device");
         // Successfully verified device
         return new ResponseMessage("Successfully verified");
+    };
+
+    /**
+     * A login attempt was made from a new device:
+     * 1. Verify signature
+     * 2. Add device to database
+     * 3. Send verification email
+     */
+    private Route newDevice = (Request request, Response response) -> {
+        SignedJSON signedJSON = GSON.fromJson(request.body(), SignedJSON.class);
+        NewDeviceRequest newDeviceRequest = GSON.fromJson(signedJSON
+          .getOriginal(), NewDeviceRequest.class);
+        // Get variables from request
+        String code;
+        String email = newDeviceRequest.getEmail();
+        String deviceUUID = newDeviceRequest.getDeviceUUID();
+        String accountUUID = accountDao.getAccountUUID(email);
+        String encodedKey = newDeviceRequest.getPublicKey();
+        LOGGER.debug("Received new-device request from: " +
+          accountUUID +" - "+ deviceUUID +" - "+request.ip());
+        // Verify signature
+        LOGGER.debug("Verifying signature");
+        if(!verifySignedJSON(accountUUID, deviceUUID, signedJSON))
+            return error400(response, "Verifying signature failed");
+        // Verify device does not exist already
+        boolean deviceExists = deviceDao.deviceExists(accountUUID, deviceUUID);
+        // If device exists but is not verified - get code
+        if(deviceExists && !deviceDao.isVerified(accountUUID, deviceUUID)) {
+            LOGGER.debug("Device exists but is not verified");
+            code = deviceDao.getVerifyCode(accountUUID, deviceUUID);
+            // If device does not exist - create it and get code
+        } else if(!deviceExists) {
+            LOGGER.debug("Device does not exist");
+            code = deviceDao.addDevice(accountUUID, new Device(deviceUUID,
+              request.ip(), request.userAgent(), encodedKey));
+        }
+        LOGGER.debug("Emailing verification code");
+        // TODO: Uncomment before deploy - Prevents emails being sent
+        // EmailController.sendRegisterEmail(email, deviceUUID, code);
+        return new ResponseMessage("Verification code has been sent");
     };
 
     /**
