@@ -37,15 +37,6 @@ public class AccountControllerTest {
     private static final String NEW_DEV_UUID =
       "f0658a55-660d-4f53-979c-411e75271ed0";
 
-    private static final String NEW_DEV_IP = "192.168.0.1";
-
-    private static final String NEW_DEV_PLATFORM = "Desktop";
-
-    private static final String NEW_DEV_PUBLIC_KEY = "pubkey";
-
-    private static final String EXISTING_ACC_UUID =
-      "92a37290-728a-49f2-9589-57378acb3adc";
-
     private static final Gson GSON = new Gson();
 
     public static class AccountControllerTestSparkApp implements SparkApplication {
