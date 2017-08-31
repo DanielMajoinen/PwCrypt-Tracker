@@ -1,6 +1,7 @@
 package com.majoinen.d.pwcrypt.tracker.device;
 
 import com.majoinen.d.database.DatabaseController;
+import com.majoinen.d.encryption.pkc.PKCUtils;
 import com.majoinen.d.pwcrypt.tracker.TestDatabaseManager;
 import com.majoinen.d.pwcrypt.tracker.account.SQLAccountDao;
 import com.majoinen.d.pwcrypt.tracker.exception.PwCryptException;
@@ -10,7 +11,7 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Daniel Majoinen
@@ -21,6 +22,11 @@ public class SQLDeviceDaoTest {
     private static final String SELECT_VERIFY_CODE =
       "SELECT verify_code FROM device_verify_code WHERE " +
         "account_uuid = :account_uuid AND device_uuid = :device_uuid";
+
+    private static final String VERIFY_DEVICE_QUERY =
+      "UPDATE device SET verified = 1 " +
+        "WHERE account_uuid = :account_uuid " +
+        "AND device_uuid = :device_uuid";
 
     private static final String EXISTING_ACC_UUID =
       "92a37290-728a-49f2-9589-57378acb3adc";
@@ -34,9 +40,15 @@ public class SQLDeviceDaoTest {
 
     private static final String EXISTING_DEV_PLATFORM = "Desktop";
 
-    private static final String EXISTING_DEV_PUBLIC_KEY = "pubkey1";
+    private static final String EXISTING_DEV_PUBLIC_KEY =
+      "AJPnZFlGYOjKvhmO7OisPb6PWro7UbYaI/MA+h5mTucFoAxnTW0JlBorE6KBYge1vwhGVV" +
+        "VeDw8s6/gz5KV1dMD0dEcWpWz6ATSpUlwov9WX9RtV1R6xyMeMHXOnjjBXDqw/aIFI85" +
+        "HNlP+v+/72mp7KDs7Q1qxPMoFFLcVoocQzwY/KsQE6uBFXe6Wc48ozxqOdBeR6D9JCtI" +
+        "n6FZ8gbtuoEIwcXqFll2zKLlpO+7zu7Few+zcFGjg/P47mVFNtPAgcWzAE/A4FeaNt09" +
+        "1qFaWsLGjoI71OJLmLRxaMYNYZjXW8OOnZrAgIpnB2y9Hc2WhuLkYbxND8+oSzlElHTs" +
+        "8=:AQAB";
 
-    private static final String EXISTING_DEV_VERIFY_CODE = "CODE";
+    private static final String EXISTING_DEV_VERIFY_CODE = "12345";
 
     private static final String NEW_DEV_UUID =
       "f0658a55-660d-4f53-979c-411e75271ed0";
@@ -76,6 +88,12 @@ public class SQLDeviceDaoTest {
           .setParameter(":device_uuid", EXISTING_DEV_UUID)
           .setParameter(":account_uuid", EXISTING_ACC_UUID)
           .setParameter(":verify_code", EXISTING_DEV_VERIFY_CODE)
+          .executeUpdate();
+
+        databaseController
+          .prepareQuery(VERIFY_DEVICE_QUERY)
+          .setParameter(":device_uuid", EXISTING_DEV_UUID)
+          .setParameter(":account_uuid", EXISTING_ACC_UUID)
           .executeUpdate();
     }
 
@@ -157,5 +175,59 @@ public class SQLDeviceDaoTest {
     public void listAllDevicesThrowsException() throws Exception {
         TestDatabaseManager.deleteTestDatabase();
         deviceDao.listAllDevices(EXISTING_ACC_UUID, EXISTING_DEV_UUID);
+    }
+
+    @Test
+    public void getValidPublicKey() throws Exception {
+        String publicKey = deviceDao.getPublicKey(EXISTING_ACC_UUID,
+          EXISTING_DEV_UUID);
+        assertNotNull(publicKey);
+        assertNotNull(PKCUtils.deserializeRSAPublicKey(publicKey));
+    }
+
+    @Test
+    public void getNonExistingPublicKey() throws Exception {
+        String publicKey = deviceDao.getPublicKey(NEW_DEV_UUID, NEW_DEV_UUID);
+        assertNull(publicKey);
+    }
+
+    @Test(expected = PwCryptException.class)
+    public void getPublicKeyThrowsException() throws Exception {
+        TestDatabaseManager.deleteTestDatabase();
+        deviceDao.getPublicKey(EXISTING_ACC_UUID, EXISTING_DEV_UUID);
+    }
+
+    @Test
+    public void isVerified() throws Exception {
+        assertTrue(deviceDao.isVerified(EXISTING_ACC_UUID, EXISTING_DEV_UUID));
+    }
+
+    @Test
+    public void isNotVerified() throws Exception {
+        assertFalse(deviceDao.isVerified(NEW_DEV_UUID, NEW_DEV_UUID));
+    }
+
+    @Test(expected = PwCryptException.class)
+    public void isVerifiedThrowsException() throws Exception {
+        TestDatabaseManager.deleteTestDatabase();
+        deviceDao.isVerified(EXISTING_ACC_UUID, EXISTING_DEV_UUID);
+    }
+
+    @Test
+    public void getVerifyCode() throws Exception {
+        assertTrue(deviceDao.getVerifyCode(EXISTING_ACC_UUID,
+          EXISTING_DEV_UUID).equals(EXISTING_DEV_VERIFY_CODE));
+    }
+
+    @Test(expected = PwCryptException.class)
+    public void getVerifyCodeThrowsException() throws Exception {
+        TestDatabaseManager.deleteTestDatabase();
+        deviceDao.getVerifyCode(EXISTING_ACC_UUID, EXISTING_DEV_UUID);
+    }
+
+    @Test(expected = PwCryptException.class)
+    public void getVerifyCodeThrowsNullPointerException() throws Exception {
+        TestDatabaseManager.deleteTestDatabase();
+        deviceDao.getVerifyCode(NEW_DEV_UUID, NEW_DEV_UUID);
     }
 }

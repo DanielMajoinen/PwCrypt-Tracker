@@ -7,11 +7,13 @@ import com.google.gson.Gson;
 import com.majoinen.d.encryption.pkc.PKCUtils;
 import com.majoinen.d.encryption.utils.EncryptionKeyGenerator;
 import com.majoinen.d.encryption.utils.Tools;
+import com.majoinen.d.pwcrypt.tracker.exception.PwCryptException;
 import com.majoinen.d.pwcrypt.tracker.spark.ResponseMessage;
 import com.majoinen.d.pwcrypt.tracker.spark.SignedJSON;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import spark.servlet.SparkApplication;
 
@@ -34,15 +36,6 @@ public class AccountControllerTest {
 
     private static final String NEW_DEV_UUID =
       "f0658a55-660d-4f53-979c-411e75271ed0";
-
-    private static final String NEW_DEV_IP = "192.168.0.1";
-
-    private static final String NEW_DEV_PLATFORM = "Desktop";
-
-    private static final String NEW_DEV_PUBLIC_KEY = "pubkey";
-
-    private static final String EXISTING_ACC_UUID =
-      "92a37290-728a-49f2-9589-57378acb3adc";
 
     private static final Gson GSON = new Gson();
 
@@ -87,7 +80,8 @@ public class AccountControllerTest {
         when(AccountControllerTestSparkApp.accountDao
           .accountExists(anyString())).thenReturn(false);
         when(AccountControllerTestSparkApp.accountDao.createAccount(
-          anyString(), any())).thenReturn(Tools.generateRandomString(SQLAccountDao.VERIFY_CODE_LENGTH, Tools.ALPHA_NUMERIC));
+          anyString(), any())).thenReturn(Tools.generateRandomString(
+          SQLAccountDao.VERIFY_CODE_LENGTH, Tools.ALPHA_NUMERIC));
 
         // Convert to JSON and submit request
         HttpResponse httpResponse = executeNewRegisterRequest();
@@ -99,6 +93,27 @@ public class AccountControllerTest {
         assertEquals(200, httpResponse.code());
         assertEquals(responseMessage.getMessage(), "Successfully registered");
         assertNotNull(testServer.getApplication());
+    }
+
+    @Test
+    public void registerAccountThrowsException() throws Exception {
+        when(AccountControllerTestSparkApp.accountDao
+          .accountExists(anyString())).thenReturn(false);
+        when(AccountControllerTestSparkApp.accountDao.createAccount(
+          anyString(), any())).thenThrow(PwCryptException.class);
+
+        // Convert to JSON and submit request
+        HttpResponse httpResponse = executeNewRegisterRequest();
+        // Get body and convert to response message
+        String body = new String(httpResponse.body());
+        ResponseMessage responseMessage = GSON.fromJson(body,
+          ResponseMessage.class);
+
+        assertEquals(400, httpResponse.code());
+        assertEquals(responseMessage.getMessage(), "Error creating account");
+        assertNotNull(testServer.getApplication());
+
+        Mockito.reset(AccountControllerTestSparkApp.accountDao);
     }
 
     private HttpResponse executeNewRegisterRequest() throws Exception {

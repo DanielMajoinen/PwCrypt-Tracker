@@ -8,6 +8,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -88,5 +89,22 @@ public class SQLAccountDaoTest {
           NEW_DEV_PLATFORM, NEW_DEV_PUBLIC_KEY);
         accountDao.createAccount(NEW_EMAIL, device);
         accountDao.createAccount(NEW_EMAIL, device);
+    }
+
+    @Test
+    public void getExistingAccountUUID() throws Exception {
+        assertTrue(EXISTING_ACC_UUID.equals(accountDao.getAccountUUID(
+          EXISTING_EMAIL)));
+    }
+
+    @Test
+    public void getNonExistingAccountUUID() throws Exception {
+        assertNull(accountDao.getAccountUUID(NEW_EMAIL));
+    }
+
+    @Test(expected = PwCryptException.class)
+    public void getAccountUUIDThrowsException() throws Exception {
+        TestDatabaseManager.deleteTestDatabase();
+        accountDao.getAccountUUID(EXISTING_EMAIL);
     }
 }

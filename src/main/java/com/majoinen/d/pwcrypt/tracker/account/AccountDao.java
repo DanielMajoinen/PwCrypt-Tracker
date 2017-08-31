@@ -25,4 +25,12 @@ public interface AccountDao {
      * @return A String containing the account verification code.
      */
     String createAccount(String email, Device device);
+
+    /**
+     * Gets the account UUID associated with an email.
+     *
+     * @param email The email of the user.
+     * @return The account UUID of the user.
+     */
+    String getAccountUUID(String email);
 }

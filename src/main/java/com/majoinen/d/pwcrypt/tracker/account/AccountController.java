@@ -16,6 +16,7 @@ import spark.Route;
 
 import java.security.PublicKey;
 
+import static com.majoinen.d.pwcrypt.tracker.spark.SparkManager.error400;
 import static spark.Spark.post;
 
 /**
@@ -117,18 +118,5 @@ public class AccountController {
             LOGGER.error("Error verifying signature of RegisterRequest", e);
             return false;
         }
-    }
-
-    /**
-     * Return a response with a 400 error status and message to go with it.
-     *
-     * @param response Response responsible for sending data back to user.
-     * @param message Message to supply response.
-     * @return A ResponseMessage.
-     */
-    private ResponseMessage error400(Response response, String message) {
-        LOGGER.debug("Returning Error 400: " + message);
-        response.status(400);
-        return new ResponseMessage(message);
     }
 }

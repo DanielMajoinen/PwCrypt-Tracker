@@ -11,16 +11,13 @@ public class Path {
         // Route for registering an account
         public static final String REGISTER = "/register/";
 
-        // Route for logging in on a new device with existing account
-        public static final String LOGIN =
-          "/login/:email/:device_uuid/:public_key/";
-
         // Route for verifying device after login
-        public static final String VERIFY_DEVICE =
-          "/verify/:code/";
+        public static final String VERIFY = "/verify/";
+
+        // Route for logging in on a new device with existing account
+        public static final String NEW_DEVICE = "/new-device/";
 
         // Route for listing all devices associated with account
-        public static final String LIST_ALL_DEVICES =
-          "/list/:account_uuid/:device_uuid/";
+        public static final String LIST_ALL_DEVICES = "/list/";
     }
 }

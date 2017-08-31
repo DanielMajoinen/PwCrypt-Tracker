@@ -49,4 +49,27 @@ public class Device {
     public void setPublicKey(String publicKey) {
         this.publicKey = publicKey;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == this)
+            return true;
+        if(!(obj instanceof Device))
+            return false;
+        Device device = (Device) obj;
+        return this.uuid.equals(device.getUuid()) &&
+          this.ip.equals(device.getIp()) &&
+          this.platform.equals(device.getPlatform()) &&
+          this.publicKey.equals(device.getPublicKey());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 31 * result + uuid.hashCode();
+        result = 31 * result + ip.hashCode();
+        result = 31 * result + platform.hashCode();
+        result = 31 * result + publicKey.hashCode();
+        return result;
+    }
 }
