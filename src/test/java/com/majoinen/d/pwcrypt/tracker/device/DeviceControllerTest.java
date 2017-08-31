@@ -160,11 +160,11 @@ public class DeviceControllerTest {
 
         HttpResponse httpResponse = executeNewVerifyRequest();
         String body = new String(httpResponse.body());
-        ResponseMessage responseMessage = GSON.fromJson(body,
-          ResponseMessage.class);
+        DeviceVerificationResponse response = GSON.fromJson(body,
+          DeviceVerificationResponse.class);
 
         assertEquals(200, httpResponse.code());
-        assertEquals(responseMessage.getMessage(), "Successfully verified");
+        assertNotNull(response.getAccountUUID());
         assertNotNull(testServer.getApplication());
         resetMockDaos();
     }

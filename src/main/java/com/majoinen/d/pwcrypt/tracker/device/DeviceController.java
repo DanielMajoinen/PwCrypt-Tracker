@@ -69,7 +69,8 @@ public class DeviceController {
         if(!deviceDao.verifyDevice(verificationRequest.getCode()))
             return error400(response, "Failed to verify device");
         // Successfully verified device
-        return new ResponseMessage("Successfully verified");
+        // TODO: Sign response before returning
+        return new DeviceVerificationResponse(accountUUID);
     };
 
     /**
