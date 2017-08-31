@@ -5,13 +5,7 @@
 Allow PwCrypt to find other devices via RESTful API.
 
 It provides the necessary information for authorised devices to locate each 
-other in order to begin peer-to-peer synchronisation. All information served as 
-results is encrypted with each unique devices, account specific, public key. 
-
-It is worth noting that the master password, even hashed, is never transmitted/
-stored. Authentication of an account is handled through email. Once 
-authenticated, authorised devices will begin the p2p syncing process, 
-after which the users password will be used for decryption locally.
+other in order to begin peer-to-peer synchronisation.
 
 The term Tracker is used as the idea for how to implement the service came 
 from my knowledge of BitTorrent trackers.
