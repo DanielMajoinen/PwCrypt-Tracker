@@ -3,7 +3,7 @@ package com.majoinen.d.pwcrypt.tracker.device;
 import com.google.gson.Gson;
 import com.majoinen.d.encryption.exception.EncryptionUtilsException;
 import com.majoinen.d.encryption.pkc.PKCUtils;
-import com.majoinen.d.pwcrypt.tracker.account.SQLAccountDao;
+import com.majoinen.d.pwcrypt.tracker.account.AccountDao;
 import com.majoinen.d.pwcrypt.tracker.log.LogManager;
 import com.majoinen.d.pwcrypt.tracker.log.Logger;
 import com.majoinen.d.pwcrypt.tracker.spark.ResponseMessage;
@@ -27,14 +27,14 @@ public class DeviceController {
     private static final Logger LOGGER =
       LogManager.getLogger(DeviceController.class);
 
-    private static final String SIGNATURE_ALGORITHM = "SHA256withRSA";
+    public static final String SIGNATURE_ALGORITHM = "SHA256withRSA";
 
     private static final Gson GSON = new Gson();
 
-    private SQLDeviceDao deviceDao;
-    private SQLAccountDao accountDao;
+    private DeviceDao deviceDao;
+    private AccountDao accountDao;
 
-    public DeviceController(SQLDeviceDao deviceDao, SQLAccountDao accountDao) {
+    public DeviceController(DeviceDao deviceDao, AccountDao accountDao) {
         this.deviceDao = deviceDao;
         this.accountDao = accountDao;
     }
@@ -62,7 +62,6 @@ public class DeviceController {
         if(accountUUID == null)
             return error400(response, "Account error");
         // Verify signature
-        LOGGER.debug("Verifying signature");
         if(!verifySignedJSON(accountUUID, deviceUUID, signedJSON))
             return error400(response, "Verifying signature failed");
         // Attempt to verify device
@@ -92,7 +91,6 @@ public class DeviceController {
         LOGGER.debug("Received new-device request from: " +
           accountUUID +" - "+ deviceUUID +" - "+request.ip());
         // Verify signature
-        LOGGER.debug("Verifying signature");
         if(!verifySignedJSON(accountUUID, deviceUUID, signedJSON))
             return error400(response, "Verifying signature failed");
         // Verify device does not exist already
@@ -128,7 +126,6 @@ public class DeviceController {
         LOGGER.debug("Received new-device request from: " +
           accountUUID +" - "+ deviceUUID +" - "+request.ip());
         // Verify signature
-        LOGGER.debug("Verifying signature");
         if(!verifySignedJSON(accountUUID, deviceUUID, signedJSON))
             return error400(response, "Verifying signature failed");
         // Get all devices
@@ -146,6 +143,7 @@ public class DeviceController {
     private boolean verifySignedJSON(String accountUUID, String deviceUUID,
       SignedJSON signedJSON) {
         try {
+            LOGGER.debug("Verifying signature");
             PublicKey publicKey = getUsersPublicKey(accountUUID, deviceUUID);
             if(publicKey == null)
                 return false;
@@ -168,8 +166,9 @@ public class DeviceController {
      * @return The users device specific public key.
      */
     private PublicKey getUsersPublicKey(String accountUUID, String deviceUUID) {
+        LOGGER.debug("Getting users public key");
         String encodedKey = deviceDao.getPublicKey(accountUUID, deviceUUID);
-        if(accountUUID == null || encodedKey == null)
+        if(encodedKey == null)
             return null;
         return deserializePublicKey(encodedKey);
     }
@@ -182,6 +181,7 @@ public class DeviceController {
      */
     private PublicKey deserializePublicKey(String encodedKey) {
         try {
+            LOGGER.debug("Deserialize public key");
             return PKCUtils.deserializeRSAPublicKey(encodedKey);
         } catch(EncryptionUtilsException e) {
             LOGGER.error("Error deserializing public key", e);
